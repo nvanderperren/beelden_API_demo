@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Commons App</title>
+    <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <style type="text/css">
+        #sq,
+        #lg-sq,
+        #large,
+        #small,
+        #mid,
+        #ori {
+            width: 100%
+        }
+        
+        <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        var apiurl, myresult, apiurl_size, selected_label, zoekwoord;
+        zoekwoord = prompt("geef een tag");
+        if (zoekwoord !== '') {
+            apiurl = "https://api.flickr.com/services/rest/?method=flickr.people.getPhotos&api_key=2e912d1fa6d323a914a57c07bac3240f&user_id=29998366@N02&tags=" + zoekwoord + "&format=json&nojsoncallback=1";
+        }
+        else apiurl = "https://api.flickr.com/services/rest/?method=flickr.people.getPhotos&api_key=2e912d1fa6d323a914a57c07bac3240f&user_id=29998366@N02&format=json&nojsoncallback=1";
+        $(document).ready(function () {
+            $("#sq").click(function () {
+                selected_label = "Square";
+            })
+        });
+        $(document).ready(function () {
+            $("#lg-sq").click(function () {
+                selected_label = "Large Square";
+            })
+        });
+        $(document).ready(function () {
+            $("#small").click(function () {
+                selected_label = "Small";
+            })
+        });
+        $(document).ready(function () {
+            $("#mid").click(function () {
+                selected_label = "Medium";
+            })
+        });
+        $(document).ready(function () {
+            $("#large").click(function () {
+                selected_label = "Large";
+            })
+        });
+        $(document).ready(function () {
+            $("#ori").click(function () {
+                selected_label = "Original";
+            })
+        });
+        $(document).ready(function () {
+            $('#button').click(function () {
+                $("#results").empty();
+                $.getJSON(apiurl, function (json) {
+                    $.each(json.photos.photo, function (i, myresult) {
+                        apiurl_size = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=2e912d1fa6d323a914a57c07bac3240f&photo_id=" + myresult.id + "&format=json&nojsoncallback=1";
+                        console.log(myresult);
+                        $.getJSON(apiurl_size, function (size) {
+                            $.each(size.sizes.size, function (i, myresult_size) {
+                                console.log(myresult_size);
+                                if (myresult_size.label == selected_label) {
+                                    $("#results").append('<span style="display:inline-block; margin:10px; padding:10px;" id="' + myresult_size.url + '"><img src="' + myresult_size.source + '"/></span>');
+                                    var x = document.getElementById(myresult_size.url)
+                                    $(x).click(function () {
+                                        alert(myresult_size.source);
+                                        window.open('mailto:test@example.com?subject=subject&body=' + myresult_size.source);
+                                    });
+                                }
+                            })
+                        })
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Lukas Partnerdag Demo</h1> </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" id="sq">Square [75X75]</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" id="lg-sq">Large Square [150X150]</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" id="small">Small</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" id="mid">Medium</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" id="large">Large</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" id="ori">Original</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success" id="button">Toon mijn foto's</button>
+                <hr> </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
